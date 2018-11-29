@@ -1,0 +1,198 @@
+---
+title: "FIFA World Cup Visualization: Data from 1930 - 2014"
+author: "Bsc, Christopher Sianyo Maronga"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.width=15, fig.height=7) 
+library(tidyverse)
+library(knitr)
+library(pander)
+cups <- read.csv("../fifa-world-cup/WorldCups.csv",header = T)
+
+```
+
+# History of  FIFA World cup
+
+A game loved by many and full of emotions and reactions. The FIFA World Cup was first held in 1930, when FIFA president Jules Rimet decided to stage an international men's football tournament. The inaugural edition, held in 1930, was contested as a final tournament of only thirteen teams invited by the organization
+
+More on world cup history,  click;
+<a href="https://en.wikipedia.org/wiki/History_of_the_FIFA_World_Cup">here</a>
+
+
+## 1. Number of teams Qualifying
+
+Initially, only 13 teams contested this prestigious tournament. As the gamme grew in popularity, more and more countries/teams have been added to the list seing the number grow from 13 to 32 teams and with a possibility of the number of teams increasing to <a href="http://kwese.espn.com/football/fifa-world-cup/story/3035778/fifa-council-unanimously-approves-world-cup-expansion-to-48-teams">48</a> according to FIFA council
+
+
+The bar plot below shows total number of teams that participated in the tournament since 1930, increasing from 13 teams in 1930 to 32 teams currently
+
+```{r Number of teams qualifying yearly}
+cups %>% 
+  group_by(Year) %>% 
+  summarise(teams=sum(QualifiedTeams)) %>% 
+ggplot(aes(reorder(Year,+teams),teams))+geom_bar(stat = "identity",fill="steelblue")+theme_minimal()+
+  labs(title="Number of teams qualifying for the tournament over time",y="number of teams",x="year")+
+  geom_text(aes(label=teams),vjust=0,col="black")
+
+```
+
+
+
+## 2. Tota number of matches played
+
+With a starting line of 13 teams, this saw only a total of 17 matches being played. As the inclusion of number of teams continued over time, the number of total matches played rose as well; currently, there is a total of 64 matches(including the final) emanating from 32 teams.
+
+The bar plot below summarizes the number of matches played over the evolution time of FIFA world cup
+
+```{r Total number of matches played}
+cups %>% 
+  group_by(Year) %>% 
+  summarise(matches=sum(MatchesPlayed)) %>% 
+ggplot(aes(reorder(Year,+matches),matches))+geom_bar(stat = "identity",fill="steelblue")+theme_minimal()+
+  labs(title="Total matches played in the tournament over time",y="number of matches",x="year")+
+  geom_text(aes(label=matches),vjust=0,col="black")
+```
+
+
+
+
+## 3. World Cup Winners since 1930
+
+The endpoint of every competition or tournament is the emergence of a winner. There are only 9 countries who have ever won the FIFA world cup trophy with Brazil having won it the most(5 times) while Italy and Germany(Germany Federal Republic/Germany) winning it 4 times a piece.
+
+The graph below shows the frequencies of FIFA world cup champions since 19930
+
+```{r  World cup winners ever since 1930}
+cups %>% 
+  group_by(Winner) %>% 
+  summarise(Times_won=n()) %>% 
+ggplot(aes(reorder(Winner,-Times_won),Times_won))+geom_col(fill="steelblue")+theme_minimal()+
+  labs(title="World cup winners since 1930",y="No. times won",x="Winner")
+
+```
+
+
+
+## 4. Champions over years since 1930
+
+The rec plot below shows who the champion was for which year the tournament was held. Uruguy was the first team to win the FIFA world cup at home in 1930.
+
+Only 2 countries, Italy(1934 & 1938) and Brazil(1958 & 1962) that have won the world cup back to back(Consectively). Uruguy is the only world cup champion with the longest spell since their last win(16 seasons), followed by England(12 season spell).
+Spain(2010) is the newest member on the list of FIFA world cup champions.
+
+```{r Winners by year since 1930}
+winners_year <- table(cups$Year,cups$Winner)
+winners_year <- as.data.frame(winners_year)
+
+winners_year <- winners_year %>% rename('Year'='Var1','Winner'='Var2','count'='Freq')
+
+ggplot(winners_year,aes(Year,count,fill=Winner))+geom_bar(col="white",stat = "identity")+
+  geom_text(aes(label=Winner), vjust=30, color="white", size=3.5)+theme_minimal()+
+  labs(title="Word Cup Winners and year won",y="")+
+  theme(legend.position = "none",axis.line = element_line(colour = "black"),
+        panel.grid = element_blank(),axis.line.y = element_blank(),axis.title.y = element_blank())+scale_y_continuous(breaks = seq(0,1,1))
+
+```
+
+
+
+
+## 5. Total number of goals scored
+
+Highest ever number of goals scored was in 1998 and 2014. 171 goals were scored
+
+```{r Total goals scored in the tournament}
+cups %>% 
+  group_by(Year) %>% 
+  summarise(goals=sum(GoalsScored)) %>% 
+  ggplot(aes(Year,goals))+geom_point(col="black")+scale_x_continuous(breaks = seq(1930,2014,4))+geom_line(col="purple",size=1)+
+  scale_y_continuous(breaks = seq(0,175,5))+theme_minimal()+labs(title="Number of goals scored in the tournament each year",y="goals scored")
+```
+
+
+
+
+## 6. Cumulative number of goals scored
+
+Upto the last time the tournament was held in Brazil in 2014, a total of 2379 goals have been scored cumulatively.
+
+```{r cumulative number of goals scored}
+cups %>% 
+  group_by(Year) %>% 
+  summarise(goals=sum(GoalsScored)) %>% 
+  mutate(cumgoal=cumsum(goals)) %>% 
+  ggplot(aes(Year,cumgoal))+geom_point(col="black")+scale_x_continuous(breaks = seq(1930,2014,4))+geom_line(col="purple",size=1)+
+  theme_minimal()+labs(title="Cumulative number of goals since 1930",y="number of goals")
+```
+
+
+
+## 7. FIFA World Cup All time stadium attendance
+
+A game loved by  many cannot be played in an empty stadium or in some kind of a boardroom, the tournament has attracted hundreds of thousands of fans/lovers of the game over the years. The highest attendance recorded to be slightly 3.5 million fans in 1994 when it was held in the United States of America(USA) and the lowest attendance recorded in Sweeden in 1958.
+
+```{r World cup all time attendance}
+options(scipen = 999) ## turn off scientific notation like 1e+06
+
+ggplot(cups,aes(as.character(Year),Attendance))+geom_bar(stat = "identity",fill="steelblue")+theme_minimal()+
+  scale_y_continuous(breaks = seq(20000,4000000,250000))+labs(title="FIFA World cup all time fans attendance",x="Year")
+```
+
+
+
+## 7. World cup hosts
+Only 15 countries have ever hosted the FIFA World cup tournament with France, Germany, Italy and Mexico having the chance to host the torunament twice
+The table below summarizes the number of times a country has hosted the world cup competition.
+
+```{r World cup hosts}
+kable(cups %>% 
+  group_by(Country) %>% 
+  arrange(Country) %>% 
+  summarise(Hosted=n()))
+```
+
+
+
+## 7.1 World cup trophy winners at home
+Only 5 teams have ever won World cup trophy at home(Uruguy 1930, Italy 1934, England 1966, Argentina 1978 and France 1998).
+Below is summary table of how various world cup hosts have faired on in the tournament they prepared in their own country. Mexico hosted the tournament twice in 1970 and 1986 but never featured in top 4 for both of the times
+
+```{r World cup home trophy winners}
+cups$Country <- as.character(cups$Country)
+cups$Winner <- as.character(cups$Winner)
+cups$Runners.Up <- as.character(cups$Runners.Up)
+cups$Third <- as.character(cups$Third)
+cups$Fourth <- as.character(cups$Fourth)
+kable(cups %>% 
+  mutate(
+    CompletedAs=ifelse(Country==Winner,"Winner",
+                   ifelse(Country==Runners.Up,"Runners up",
+                          ifelse(Country==Third,"3rd Pos.",
+                                 ifelse(Country==Fourth,"4th Pos.","absent in top 4"))))
+  ) %>%
+  select(Year,Country,CompletedAs))
+```
+
+
+
+
+
+
+## Remarks
+This short visual analysis was a snipet of close to obvious facts about the FIFA world cup. With the available dataset, more analysis can be done to inform lovers of the game on the hidden statistics. For instance, is hosting the world cup increase your chances of winning?
+
+The link below contains the dataset used in the. It is an open source data so feel free to use it to explore
+
+<a href="https://www.kaggle.com/abecklas/fifa-world-cup">source of the dataset used in the analysis</a>
+
+
+
+
+
