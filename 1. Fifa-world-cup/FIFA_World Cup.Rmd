@@ -14,7 +14,7 @@ knitr::opts_chunk$set(fig.width=15, fig.height=7)
 library(tidyverse)
 library(knitr)
 library(pander)
-cups <- read.csv("../fifa-world-cup/WorldCups.csv",header = T)
+cups <- read.csv("../1. Fifa-world-cup/WorldCups.csv",header = T)
 
 ```
 
