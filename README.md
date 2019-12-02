@@ -1,1 +1,1 @@
-# Data_Science_Practice
+# All about Data Science and Statistics
