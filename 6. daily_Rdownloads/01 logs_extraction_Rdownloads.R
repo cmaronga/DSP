@@ -1,7 +1,6 @@
 # load packages -----------------------------------------------------------
 library(tidyverse)
 
-
 # Download country and continent codes ------------------------------------
 
 country_codes <- read_csv("https://pkgstore.datahub.io/JohnSnowLabs/country-and-continent-codes-list/country-and-continent-codes-list-csv_csv/data/b7876b7f496677669644f3d1069d3121/country-and-continent-codes-list-csv_csv.csv")
@@ -15,7 +14,6 @@ country_codes <- country_codes %>%
     
     Country_Name = replace(Country_Name, which(Three_Letter_Country_Code == "NAM"), "Missing/Namibia")
   )
-
 
 # The Log repository started being tracked in october 2012 to date (2012-10-01)
 
@@ -49,9 +47,5 @@ country_codes <- country_codes %>%
       write_csv(paste("00 datasets", "/", "daily_Rdownloads209", "/", data_name, ".csv", sep = ""))
     
   }
-  
-  
-  dataset_with_country_name[, -c(8,9)] %>% 
-    anti_join(dataset, by = NULL)
-  
+
   
