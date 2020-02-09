@@ -1,3 +1,5 @@
+# script used in extracting the logs data
+
 # load packages -----------------------------------------------------------
 library(tidyverse)
 
